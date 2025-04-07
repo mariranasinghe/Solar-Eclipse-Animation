@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Solar Eclipse Animation</title>
+    <style>
+      * {
+        margin: 0px;
+        padding: 0px;
+        box-sizing: inherit;
+      }
+
+      html {
+        margin: 0px;
+        padding: 0px;
+        height: 100%;
+        box-sizing: border-box;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 600px;
+        background-image: linear-gradient(30deg, #182c51, #09101e);
+        overflow: hidden;
+      }
+
+      .moon {
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        position: relative;
+        background-image: linear-gradient(30deg, #13223f, #0e1a30);
+      }
+
+      .moon::before {
+        content: "";
+        background-color: rgba(0, 0, 0, 0);
+        border-radius: 50%;
+        z-index: -1;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        display: block;
+        animation: 3.2s eclipse-animation linear infinite alternate;
+      }
+
+      .stars {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+      }
+
+      .star {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: white;
+        border-radius: 50%;
+        animation: star-twinkle 2s infinite;
+      }
+
+      @keyframes eclipse-animation {
+        0% {
+          box-shadow: none;
+          transform: translate(-30px, 30px) scale(0.9);
+        }
+        50% {
+          box-shadow: 0 0 10px #f9f3f2, 0 0 80px 8px #c7938b;
+          transform: translate(0px, 0px) scale(1.02);
+          background-color: #efdbd8;
+        }
+        100% {
+          transform: translate(30px, -30px) scale(0.9);
+          box-shadow: none;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .moon {
+          width: 160px;
+          height: 160px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stars"></div>
+    <div class="moon"></div>
+    <script>
+      function creatingStars() {
+        const starsContainer = document.querySelector(".stars");
+        const moon = document.querySelector(".moon");
+        const numberOfStars = 200;
+
+        // Get the moon's position and size
+        const moonRect = moon.getBoundingClientRect();
+        const moonX = moonRect.left + moonRect.width / 2;
+        const moonY = moonRect.top + moonRect.height / 2;
+        const moonRadius = moonRect.width / 2;
+
+        for (let i = 0; i < numberOfStars; i++) {
+          const star = document.createElement("div");
+          star.className = "star";
+
+          let x, y;
+          let isValidPosition = false;
+          let attempts = 0;
+
+          // Generate positions until a valid location is found
+          do {
+            x = Math.random() * window.innerWidth;
+            y = Math.random() * window.innerHeight;
+
+            // Calculate distance from moon's center
+            const dx = x - moonX;
+            const dy = y - moonY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            isValidPosition = distance > moonRadius;
+            attempts++;
+          } while (!isValidPosition && attempts < 20);
+
+          if (isValidPosition) {
+            star.style.left = `${(x / window.innerWidth) * 100}%`;
+            star.style.top = `${(y / window.innerHeight) * 100}%`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            starsContainer.appendChild(star);
+          }
+        }
+      }
+
+      creatingStars();
+    </script>
+  </body>
+</html>
